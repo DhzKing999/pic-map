@@ -4,7 +4,7 @@ import env from '../utils/validate-ENV'
 
 export const conntectToDatabase = async () =>
 {
-    mongoose.connect(`${env.MONGO_URL}`, { dbName: "Demo" }).then(() =>
+    mongoose.connect(`${env.MONGO_URL}`, { dbName: "Pic-Map" }).then(() =>
     {
         console.log('DATABASE CONNECTED!')
     }).catch((err: any) =>

@@ -1,19 +1,22 @@
-import { useEffect } from 'react'; // Import useMemo
+import { useCallback, useEffect, useState } from 'react'; // Import useMemo
 import { Image, StyleSheet, View } from 'react-native';
 
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 
+import { useBottomSheetStore, useLocationStore, useModalStore, useSelectedImageStore } from '~/store/store';
+import { useImageGet } from '~/hooks/image';
+import { ImageType } from '~/types';
 import ModalComponent from '~/components/Modal';
-import { useLocationStore, useModalStore } from '~/store/store';
+import { useModalControls } from '~/hooks/pop-image';
 
 export default function Home()
 {
 
   const setCoordiantes = useLocationStore().setCoords
-  const openModel = useModalStore().onOpen
   const location = useLocationStore((state) => state.coords)
-
+  const { data, isLoading, isError } = useImageGet()
+  const { selectedImage, setSelectedImage } = useSelectedImageStore()
   useEffect(() =>
   {
     (async () =>
@@ -39,23 +42,25 @@ export default function Home()
             longitudeDelta: 0.0421
           }}
           style={styles.map} >
-          <Marker
-            onPress={() => openModel()}
-            className='p-2 border-2 border-black'
-            coordinate={{ latitude: location?.coords.latitude, longitude: location?.coords.longitude }}
-          >
-            <ModalComponent url='https://res.cloudinary.com/dzsl2h59g/image/upload/v1714223392/image_gtla0u.jpg'>
+          {data && data?.map((m: ImageType) => (
+            <Marker
+              onPress={() => { setSelectedImage(m) }}
+              key={m._id}
+              className='p-2 border-2 border-black '
+              coordinate={{ latitude: Number(m?.latitude), longitude: Number(m?.longitude) }}
+            >
               <View className=' border-2 border-white'>
                 <Image
+
                   className='border-white border-[2px] -rotate-3'
                   source={{
-                    uri: 'https://res.cloudinary.com/dzsl2h59g/image/upload/v1714223392/image_gtla0u.jpg',
+                    uri: m.url,
                   }} style={{ height: 35, width: 35 }} />
               </View>
-            </ModalComponent>
-
-          </Marker>
+            </Marker>
+          ))}
         </MapView>}
+        {selectedImage && <ModalComponent />}
 
       </View>
     </>

@@ -4,6 +4,8 @@ import { SplashScreen, Stack } from 'expo-router';
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react';
 import Toast from 'react-native-toast-message';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,15 +31,21 @@ export default function RootLayout()
 
   }, [fontsLoaded, error])
 
+  const queryClient = new QueryClient()
   if (!fontsLoaded && !error) return null;
   return (
     <>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-      <Toast />
+      <QueryClientProvider client={queryClient}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+          <Toast />
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+
     </>
   );
 }

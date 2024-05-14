@@ -5,7 +5,7 @@ interface ButtonProps extends TouchableOpacityProps
 {
   onPress: () => void;
   title: string;
-  className: string
+  className?: string
 }
 
 export const Button = forwardRef<TouchableOpacity, ButtonProps>(({ onPress, title, className }, ref) =>
